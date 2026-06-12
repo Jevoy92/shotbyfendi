@@ -43,3 +43,35 @@
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Quiz range slider */
+.quiz-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 2px;
+  background: rgba(232, 228, 220, 0.15);
+  outline: none;
+  cursor: pointer;
+}
+.quiz-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  background: #c87f4a;
+  border: 2px solid #070707;
+  box-shadow: 0 0 0 1px rgba(232, 228, 220, 0.45);
+  cursor: grab;
+}
+.quiz-slider::-webkit-slider-thumb:active { cursor: grabbing; }
+.quiz-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  background: #c87f4a;
+  border: 2px solid #070707;
+  box-shadow: 0 0 0 1px rgba(232, 228, 220, 0.45);
+  cursor: grab;
+}

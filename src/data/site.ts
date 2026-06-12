@@ -1,5 +1,6 @@
-// TODO: replace with Fendi's real booking email before launch.
-export const bookingEmail = 'bookings@shotbyfendi.com'
+// Intentionally never rendered on the page — only used as the mailto target
+// when a visitor sends their quiz brief, so it stays off scrapers' radar.
+export const bookingEmail = 'Bigfendi4334@gmail.com'
 
 export const socials = {
   instagram: {

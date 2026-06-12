@@ -58,11 +58,15 @@ export type Option = {
   weights: Partial<Record<ArchetypeKey, number>>
 }
 
+/** How the question is rendered: each kind has a custom interactive graphic. */
+export type QuestionKind = 'icons' | 'swatch' | 'wave' | 'slider' | 'liquid' | 'aperture'
+
 export type Question = {
   id: string
   /** Label used in the emailed brief, e.g. "Project type" */
   briefLabel: string
   prompt: string
+  kind: QuestionKind
   options: Option[]
 }
 
@@ -71,6 +75,7 @@ export const questions: Question[] = [
     id: 'type',
     briefLabel: 'Project type',
     prompt: 'What are we making?',
+    kind: 'icons',
     options: [
       { label: 'A brand film that sells without shouting', brief: 'Brand film', weights: { polished: 3, golden: 1 } },
       { label: 'A music video for my next drop', brief: 'Music video', weights: { auteur: 3, street: 1 } },
@@ -82,6 +87,7 @@ export const questions: Question[] = [
     id: 'mood',
     briefLabel: 'Mood',
     prompt: 'Pick the light.',
+    kind: 'swatch',
     options: [
       { label: 'Golden hour, sun-flared and warm', brief: 'Golden hour / warm', weights: { golden: 3 } },
       { label: 'Hard shadows and city concrete', brief: 'Hard light / urban', weights: { street: 3 } },
@@ -93,6 +99,7 @@ export const questions: Question[] = [
     id: 'platform',
     briefLabel: 'Where it lives',
     prompt: 'Where does this live first?',
+    kind: 'icons',
     options: [
       { label: 'Instagram & TikTok — vertical, fast', brief: 'IG / TikTok', weights: { street: 2, auteur: 1 } },
       { label: 'YouTube — people press play on purpose', brief: 'YouTube', weights: { auteur: 2, golden: 1 } },
@@ -104,6 +111,7 @@ export const questions: Question[] = [
     id: 'sound',
     briefLabel: 'Soundtrack',
     prompt: 'What is playing underneath?',
+    kind: 'wave',
     options: [
       { label: 'Smooth R&B — let it glide', brief: 'Smooth R&B', weights: { golden: 3 } },
       { label: 'Hard-hitting hip-hop — let it knock', brief: 'Hip-hop', weights: { auteur: 2, street: 2 } },
@@ -115,6 +123,7 @@ export const questions: Question[] = [
     id: 'pace',
     briefLabel: 'Edit pace',
     prompt: 'How should the edit move?',
+    kind: 'slider',
     options: [
       { label: 'Slow and intentional — every frame earns its time', brief: 'Slow & intentional', weights: { golden: 2, polished: 2 } },
       { label: 'Quick cuts — keep thumbs off the scroll', brief: 'Fast cuts', weights: { street: 2, auteur: 2 } },
@@ -125,6 +134,7 @@ export const questions: Question[] = [
     id: 'timeline',
     briefLabel: 'Timeline',
     prompt: 'When do you need it?',
+    kind: 'liquid',
     options: [
       { label: 'Yesterday — ASAP', brief: 'ASAP', weights: {} },
       { label: 'Within the month', brief: 'This month', weights: {} },
@@ -135,7 +145,8 @@ export const questions: Question[] = [
   {
     id: 'budget',
     briefLabel: 'Budget range',
-    prompt: 'Rough budget range?',
+    prompt: 'Open up the budget.',
+    kind: 'aperture',
     options: [
       { label: 'Under $1k — starting out', brief: 'Under $1k', weights: {} },
       { label: '$1k – $3k — ready to invest', brief: '$1k–$3k', weights: {} },
@@ -147,13 +158,18 @@ export const questions: Question[] = [
 
 const tieOrder: ArchetypeKey[] = ['golden', 'street', 'polished', 'auteur']
 
-export function scoreAnswers(answers: Option[]): Archetype {
+export function scoreTotals(answers: Option[]): Record<ArchetypeKey, number> {
   const totals: Record<ArchetypeKey, number> = { golden: 0, street: 0, polished: 0, auteur: 0 }
   for (const a of answers) {
     for (const [k, w] of Object.entries(a.weights)) {
       totals[k as ArchetypeKey] += w ?? 0
     }
   }
+  return totals
+}
+
+export function scoreAnswers(answers: Option[]): Archetype {
+  const totals = scoreTotals(answers)
   let best = tieOrder[0]
   for (const k of tieOrder) {
     if (totals[k] > totals[best]) best = k
