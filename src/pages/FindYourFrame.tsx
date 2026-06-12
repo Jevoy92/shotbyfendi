@@ -10,7 +10,10 @@ import {
   scoreTotals,
   recommendPackage,
   buildBrief,
+  readiness,
+  playbook,
 } from '../data/quiz'
+import { ensureAudio, playSample, stopSample } from '../components/quiz/audio'
 import type { Option, ArchetypeKey } from '../data/quiz'
 import { socials, bookingEmail } from '../data/site'
 import { InstagramIcon } from '../components/SocialIcons'
@@ -60,6 +63,11 @@ export default function FindYourFrame() {
     () => (archetype ? buildBrief(archetype, pkg, answers, questions, name) : ''),
     [archetype, pkg, answers, name],
   )
+  const status = useMemo(() => (done ? readiness(answers, questions) : null), [done, answers])
+  const moves = useMemo(
+    () => (archetype ? playbook(archetype, answers, questions) : []),
+    [archetype, answers],
+  )
 
   const setAnswer = (opt: Option) => {
     const next = [...answers]
@@ -71,6 +79,8 @@ export default function FindYourFrame() {
   const pickAndAdvance = (opt: Option, delay = 550) => {
     if (advancing.current) return
     advancing.current = true
+    ensureAudio() // user gesture — unlocks hover audio previews for later questions
+    stopSample()
     setAnswer(opt)
     setTimeout(() => {
       advancing.current = false
@@ -161,7 +171,13 @@ export default function FindYourFrame() {
                     brief you can send straight to Fendi. No wrong answers, only
                     wrong lenses.
                   </p>
-                  <button onClick={() => setStep(0)} className="btn-primary">
+                  <button
+                    onClick={() => {
+                      ensureAudio()
+                      setStep(0)
+                    }}
+                    className="btn-primary"
+                  >
                     Roll camera <ArrowRight size={14} />
                   </button>
                 </div>
@@ -261,6 +277,10 @@ export default function FindYourFrame() {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.08 + i * 0.07, duration: 0.5, ease }}
                           onClick={() => pickAndAdvance(opt)}
+                          onMouseEnter={() => playSample(waveVariants[i])}
+                          onMouseLeave={stopSample}
+                          onFocus={() => playSample(waveVariants[i])}
+                          onBlur={stopSample}
                           className={`border px-6 py-5 flex items-center justify-between gap-6 transition-all duration-300 ${
                             selected
                               ? 'border-ember bg-ember/10'
@@ -448,6 +468,62 @@ export default function FindYourFrame() {
                     >
                       {archetype.description}
                     </motion.p>
+
+                    {/* Production status — the quick-win verdict */}
+                    {status && (
+                      <div className="max-w-xl mb-12 border border-bone/15 bg-ink-900 p-6 md:p-7 relative overflow-hidden">
+                        <div className="flex flex-wrap items-center gap-5 mb-4">
+                          <motion.div
+                            initial={{ scale: 2.2, opacity: 0, rotate: 6 }}
+                            animate={{ scale: 1, opacity: 1, rotate: -3 }}
+                            transition={{ delay: 1.1, type: 'spring', stiffness: 220, damping: 15 }}
+                            className="border-2 border-ember text-ember font-mono text-sm md:text-base tracking-[0.3em] uppercase px-4 py-2"
+                          >
+                            {status.tier}
+                          </motion.div>
+                          <div className="flex-1 min-w-[120px]">
+                            <div className="flex justify-between font-mono text-[10px] tracking-[0.25em] uppercase text-bone/40 mb-1.5">
+                              <span>Production readiness</span>
+                              <span className="text-ember">{status.pct}%</span>
+                            </div>
+                            <div className="h-1.5 bg-bone/10 overflow-hidden">
+                              <motion.div
+                                className="h-full bg-ember"
+                                initial={{ width: 0 }}
+                                animate={{ width: `${status.pct}%` }}
+                                transition={{ delay: 1.3, duration: 1, ease }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <p className="text-sm md:text-base text-bone/65 leading-relaxed">{status.note}</p>
+                      </div>
+                    )}
+
+                    {/* First three moves — personalized playbook */}
+                    {moves.length > 0 && (
+                      <div className="max-w-xl mb-12">
+                        <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-bone/40 mb-5">
+                          Your first three moves
+                        </p>
+                        <ol className="space-y-5">
+                          {moves.map((m, i) => (
+                            <motion.li
+                              key={i}
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: 1.4 + i * 0.15, duration: 0.7, ease }}
+                              className="flex gap-5 items-baseline"
+                            >
+                              <span className="font-display italic text-3xl md:text-4xl text-ember leading-none">
+                                {String(i + 1).padStart(2, '0')}
+                              </span>
+                              <p className="text-sm md:text-base text-bone/70 leading-relaxed">{m}</p>
+                            </motion.li>
+                          ))}
+                        </ol>
+                      </div>
+                    )}
 
                     {/* Style DNA meters */}
                     <div className="max-w-xl">

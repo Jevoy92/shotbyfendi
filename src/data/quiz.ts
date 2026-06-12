@@ -186,6 +186,73 @@ export function recommendPackage(archetype: Archetype, answers: Option[], qs: Qu
   return archetype.recommendedPackage
 }
 
+/* ───────── Tailored quick-win results ───────── */
+
+export type Readiness = { pct: number; tier: string; note: string }
+
+/** Film-style production readiness, scored from timeline, budget, and platform clarity. */
+export function readiness(answers: Option[], qs: Question[]): Readiness {
+  const get = (id: string) => answers[qs.findIndex((q) => q.id === id)]?.brief ?? ''
+  const t = get('timeline')
+  const b = get('budget')
+  const p = get('platform')
+  const tPts = t === 'ASAP' || t === 'This month' ? 3 : t === 'This quarter' ? 2 : 1
+  const bPts = b === '$3k+' || b === '$1k–$3k' ? 3 : b === 'Under $1k' ? 2 : 1
+  const pPts = p === 'Multi-platform' ? 2 : 3
+  const pct = Math.round(((tPts + bPts + pPts) / 9) * 100)
+  if (pct >= 85)
+    return {
+      pct,
+      tier: 'Greenlit',
+      note: 'Clear goal, real budget, live deadline. You are one DM away from a call sheet — projects like this turn around fast.',
+    }
+  if (pct >= 60)
+    return {
+      pct,
+      tier: 'Pre-Production',
+      note: 'The vision is there; a couple of details are still soft. One quick conversation locks the scope, then it goes straight to scheduling.',
+    }
+  return {
+    pct,
+    tier: 'In Development',
+    note: 'You are in the idea stage — the perfect time to talk. Bring this brief to a free consult and leave with a direction and a number.',
+  }
+}
+
+const archetypeTips: Record<ArchetypeKey, string> = {
+  golden:
+    'Build your next shoot around the hour after sunrise or before sunset — one location, three looks, zero artificial light.',
+  street:
+    'Scout two blocks, not ten. Repeatable locations with strong texture beat variety every single time.',
+  polished:
+    'Lock a simple brand kit first — two colors, one font, one color grade — so every video reads as yours within a second.',
+  auteur:
+    'Storyboard the hook: the first three seconds deserve more planning time than the other twenty-seven combined.',
+}
+
+const platformTips: Record<string, string> = {
+  'IG / TikTok': 'Shoot everything 4K vertical and frame for the center 80% — captions and UI eat the edges.',
+  YouTube: 'Open cold, mid-action. Save the intro for second twenty, not second one.',
+  Website: 'One hero film, 60–90 seconds, autoplay muted with captions — it outperforms a wall of clips.',
+  'Multi-platform': 'Shoot horizontal masters with safe vertical crops in mind — one session, every aspect ratio.',
+}
+
+const paceTips: Record<string, string> = {
+  'Slow & intentional': 'Give each shot a full breath — four to six seconds — and let the music do the cutting.',
+  'Fast cuts': 'Bank three times more b-roll than feels necessary. Rapid edits starve slow shoots.',
+  'Dynamic build': 'Map the energy curve before the shoot — calm establish, rising motion, payoff — then shoot to that curve.',
+}
+
+/** Three concrete, personalized moves composed from their answers. */
+export function playbook(archetype: Archetype, answers: Option[], qs: Question[]): string[] {
+  const get = (id: string) => answers[qs.findIndex((q) => q.id === id)]?.brief ?? ''
+  return [
+    archetypeTips[archetype.key],
+    platformTips[get('platform')] ?? platformTips['Multi-platform'],
+    paceTips[get('pace')] ?? paceTips['Dynamic build'],
+  ]
+}
+
 export function buildBrief(
   archetype: Archetype,
   pkg: string,
@@ -193,12 +260,18 @@ export function buildBrief(
   qs: Question[],
   name: string,
 ): string {
+  const r = readiness(answers, qs)
+  const moves = playbook(archetype, answers, qs)
   const lines = [
     'SHOOT BRIEF — SHOTBYFENDI',
     '------------------------------',
     `Visual style: ${archetype.name}`,
     ...qs.map((q, i) => `${q.briefLabel}: ${answers[i]?.brief ?? '—'}`),
     `Recommended package: ${pkg}`,
+    `Production status: ${r.tier.toUpperCase()} (${r.pct}%)`,
+    '------------------------------',
+    'FIRST THREE MOVES:',
+    ...moves.map((m, i) => `${i + 1}. ${m}`),
     '------------------------------',
     name ? `From: ${name}` : 'From: (add your name / brand)',
     'Sent from the Find Your Frame quiz at the ShotByFendi site',
