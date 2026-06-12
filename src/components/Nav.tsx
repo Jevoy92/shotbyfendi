@@ -1,17 +1,21 @@
 import { useEffect, useState } from 'react'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
+import SocialRow from './SocialRow'
 
 const links = [
-  { href: '#work', label: 'Work' },
-  { href: '#about', label: 'About' },
-  { href: '#services', label: 'Services' },
-  { href: '#contact', label: 'Contact' },
+  { to: '/work', label: 'Work' },
+  { to: '/case-study', label: 'Case Study' },
+  { to: '/about', label: 'About' },
+  { to: '/services', label: 'Services' },
+  { to: '/contact', label: 'Contact' },
 ]
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
+  const { pathname } = useLocation()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60)
@@ -20,48 +24,63 @@ export default function Nav() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  useEffect(() => setOpen(false), [pathname])
+
   return (
     <>
-      <motion.header
-        initial={{ y: -40, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 1, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      <header
         className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${
-          scrolled ? 'bg-ink-950/80 backdrop-blur-xl border-b border-bone/5' : 'bg-transparent'
+          scrolled || open
+            ? 'bg-ink-950/85 backdrop-blur-xl border-b border-bone/5'
+            : 'bg-gradient-to-b from-ink-950/80 via-ink-950/35 to-transparent'
         }`}
       >
         <div className="container-wide flex items-center justify-between py-5 md:py-6">
-          <a href="#top" className="group flex items-baseline gap-2">
+          <Link to="/" className="group flex items-baseline gap-2">
             <span className="font-display italic text-2xl md:text-3xl font-normal tracking-tight">
               Shop by Fendi
             </span>
             <span className="hidden md:inline-block w-1.5 h-1.5 bg-ember rounded-full group-hover:scale-150 transition-transform" />
-          </a>
+          </Link>
 
-          <nav className="hidden md:flex items-center gap-10">
+          <nav className="hidden md:flex items-center gap-8">
             {links.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                className="text-xs tracking-[0.25em] uppercase text-bone/70 hover:text-bone transition-colors"
+              <NavLink
+                key={l.to}
+                to={l.to}
+                className={({ isActive }) =>
+                  `relative text-xs tracking-[0.25em] uppercase transition-colors pb-1 ${
+                    isActive ? 'text-bone' : 'text-bone/60 hover:text-bone'
+                  }`
+                }
               >
-                {l.label}
-              </a>
+                {({ isActive }) => (
+                  <>
+                    {l.label}
+                    {isActive && (
+                      <motion.span
+                        layoutId="nav-underline"
+                        className="absolute left-0 right-0 -bottom-0.5 h-px bg-ember"
+                      />
+                    )}
+                  </>
+                )}
+              </NavLink>
             ))}
-            <a href="#contact" className="btn-primary !py-2.5 !px-5">
+            <Link to="/contact" className="btn-primary !py-2.5 !px-5">
               Book
-            </a>
+            </Link>
           </nav>
 
           <button
-            onClick={() => setOpen(true)}
+            onClick={() => setOpen((v) => !v)}
             className="md:hidden text-bone p-2"
-            aria-label="Open menu"
+            aria-label={open ? 'Close menu' : 'Open menu'}
           >
-            <Menu size={22} />
+            {open ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
-      </motion.header>
+      </header>
 
       <AnimatePresence>
         {open && (
@@ -69,28 +88,35 @@ export default function Nav() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] bg-ink-950/98 backdrop-blur-2xl md:hidden"
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-40 bg-ink-950/98 backdrop-blur-2xl md:hidden"
           >
-            <div className="flex items-center justify-between p-6">
-              <span className="font-display italic text-2xl">Shop by Fendi</span>
-              <button onClick={() => setOpen(false)} className="p-2" aria-label="Close menu">
-                <X size={22} />
-              </button>
-            </div>
-            <nav className="flex flex-col items-center justify-center gap-8 pt-20">
-              {links.map((l, i) => (
-                <motion.a
-                  key={l.href}
-                  href={l.href}
-                  onClick={() => setOpen(false)}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 + i * 0.08 }}
-                  className="font-display text-5xl"
+            <nav className="flex flex-col items-start justify-center gap-6 h-full px-10">
+              {[{ to: '/', label: 'Home' }, ...links].map((l, i) => (
+                <motion.div
+                  key={l.to}
+                  initial={{ opacity: 0, x: -24 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.08 + i * 0.06 }}
                 >
-                  {l.label}
-                </motion.a>
+                  <NavLink
+                    to={l.to}
+                    className={({ isActive }) =>
+                      `font-display text-5xl ${isActive ? 'italic text-ember' : 'text-bone'}`
+                    }
+                  >
+                    {l.label}
+                  </NavLink>
+                </motion.div>
               ))}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="mt-8"
+              >
+                <SocialRow size={22} />
+              </motion.div>
             </nav>
           </motion.div>
         )}
