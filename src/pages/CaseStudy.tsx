@@ -74,7 +74,7 @@ export default function CaseStudy() {
           </h1>
           <div className="grid md:grid-cols-12 gap-8 mt-10">
             <p className="md:col-span-5 text-bone/65 text-base md:text-lg leading-relaxed">
-              What does it actually look like to hire Shop by Fendi? This is one
+              What does it actually look like to hire ShotByFendi? This is one
               production, end to end — a cinematic model shoot through Pike Place,
               Pier 57, and the alleys of downtown Seattle.
             </p>

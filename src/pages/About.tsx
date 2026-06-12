@@ -44,7 +44,7 @@ export default function About() {
               <div className="space-y-6 text-bone/70 text-base md:text-lg leading-relaxed">
                 <p>
                   <span className="text-bone">Joshua "Fendi" Buck</span> is the
-                  founder of Shop by Fendi, a videography studio building clean,
+                  founder of ShotByFendi, a videography studio building clean,
                   modern visuals for brands, artists, and creatives.
                 </p>
                 <p>
@@ -55,7 +55,7 @@ export default function About() {
                   followed him into videography.
                 </p>
                 <p>
-                  Today, Shop by Fendi helps clients tell their story through
+                  Today, ShotByFendi helps clients tell their story through
                   visuals that feel real, polished, and worth pausing for.
                 </p>
               </div>

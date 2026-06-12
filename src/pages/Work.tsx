@@ -25,7 +25,7 @@ export default function Work() {
           </h1>
           <p className="text-bone/60 text-base md:text-lg leading-relaxed max-w-xl mt-8">
             Every piece here is real, published work — directed, shot, and edited
-            by Shop by Fendi. Press play on anything.
+            by ShotByFendi. Press play on anything.
           </p>
         </div>
       </section>

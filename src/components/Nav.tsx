@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import SocialRow from './SocialRow'
+import { socials } from '../data/site'
 
 const links = [
   { to: '/work', label: 'Work' },
@@ -38,7 +39,7 @@ export default function Nav() {
         <div className="container-wide flex items-center justify-between py-5 md:py-6">
           <Link to="/" className="group flex items-baseline gap-2">
             <span className="font-display italic text-2xl md:text-3xl font-normal tracking-tight">
-              Shop by Fendi
+              ShotByFendi
             </span>
             <span className="hidden md:inline-block w-1.5 h-1.5 bg-ember rounded-full group-hover:scale-150 transition-transform" />
           </Link>
@@ -67,9 +68,14 @@ export default function Nav() {
                 )}
               </NavLink>
             ))}
-            <Link to="/contact" className="btn-primary !py-2.5 !px-5">
-              Book
-            </Link>
+            <a
+              href={socials.instagram.url}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-primary !py-2.5 !px-5"
+            >
+              DM to Book
+            </a>
           </nav>
 
           <button

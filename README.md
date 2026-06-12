@@ -1,4 +1,4 @@
-# Shop by Fendi
+# ShotByFendi
 
 Cinematic videography portfolio for Joshua "Fendi" Buck — Seattle-based videographer.
 

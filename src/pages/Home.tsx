@@ -127,7 +127,7 @@ export default function Home() {
             </div>
             <div className="md:col-span-4 md:col-start-9">
               <p className="text-bone/60 leading-relaxed">
-                {featured.category}. Directed, shot, and cut by Shop by Fendi.
+                {featured.category}. Directed, shot, and cut by ShotByFendi.
               </p>
             </div>
           </div>

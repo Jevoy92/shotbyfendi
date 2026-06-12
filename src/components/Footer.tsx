@@ -18,7 +18,7 @@ export default function Footer() {
         <div className="grid md:grid-cols-12 gap-10 items-end">
           <div className="md:col-span-6">
             <p className="font-display italic text-5xl md:text-7xl leading-none mb-6">
-              Shop by Fendi
+              ShotByFendi
             </p>
             <p className="text-bone/50 text-sm max-w-sm">
               Cinematic videography for brands, artists, and creatives. Based in
@@ -77,7 +77,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 pt-6 border-t border-bone/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-2 text-bone/40 font-mono text-[10px] tracking-[0.25em] uppercase">
-          <p>© {year} Joshua Buck · Shop by Fendi</p>
+          <p>© {year} Joshua Buck · ShotByFendi</p>
           <p>Seattle, WA</p>
         </div>
       </div>

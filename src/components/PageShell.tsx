@@ -10,7 +10,7 @@ type Props = {
 /** Wraps every page: sets the document title and animates entry/exit. */
 export default function PageShell({ title, children }: Props) {
   useEffect(() => {
-    document.title = `${title} — Shop by Fendi`
+    document.title = `${title} — ShotByFendi`
     // AnimatePresence mode="wait" mounts this after the old page exits, so
     // resetting here (not on route change) guarantees the new page starts at top.
     window.scrollTo(0, 0)
