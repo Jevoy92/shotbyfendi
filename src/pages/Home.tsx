@@ -210,6 +210,33 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ───────────────────────── Quiz teaser */}
+      <section className="py-24 md:py-36 bg-ink-950 border-t border-bone/10">
+        <div className="container-wide grid md:grid-cols-12 gap-10 items-center">
+          <div className="md:col-span-7">
+            <p className="eyebrow mb-4">
+              <span className="inline-block w-6 h-px bg-ember mr-3 align-middle" />
+              Interactive · 60 seconds
+            </p>
+            <h2 className="display text-4xl md:text-6xl mb-6">
+              Not sure what
+              <br />
+              <span className="italic">your story looks like?</span>
+            </h2>
+            <p className="text-bone/60 text-base md:text-lg leading-relaxed max-w-lg">
+              Seven quick picks — light, sound, pace — and Find Your Frame cuts
+              together your visual style, matches it to a package, and writes
+              your shoot brief for you.
+            </p>
+          </div>
+          <div className="md:col-span-4 md:col-start-9 flex md:justify-end">
+            <Link to="/find-your-frame" className="btn-primary">
+              Find your frame <ArrowRight size={14} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ───────────────────────── CTA */}
       <section className="py-24 md:py-36 bg-ink-900">
         <div className="container-tight text-center">

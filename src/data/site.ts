@@ -1,3 +1,6 @@
+// TODO: replace with Fendi's real booking email before launch.
+export const bookingEmail = 'bookings@shotbyfendi.com'
+
 export const socials = {
   instagram: {
     label: 'Instagram',

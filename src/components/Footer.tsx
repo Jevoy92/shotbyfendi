@@ -7,6 +7,7 @@ const pages = [
   { to: '/case-study', label: 'Case Study' },
   { to: '/about', label: 'About' },
   { to: '/services', label: 'Services' },
+  { to: '/find-your-frame', label: 'Find Your Frame' },
   { to: '/contact', label: 'Contact' },
 ]
 

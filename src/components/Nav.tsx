@@ -10,6 +10,7 @@ const links = [
   { to: '/case-study', label: 'Case Study' },
   { to: '/about', label: 'About' },
   { to: '/services', label: 'Services' },
+  { to: '/find-your-frame', label: 'The Quiz' },
   { to: '/contact', label: 'Contact' },
 ]
 
