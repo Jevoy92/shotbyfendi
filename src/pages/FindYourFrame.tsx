@@ -410,31 +410,61 @@ export default function FindYourFrame() {
                 transition={{ duration: 0.7, ease }}
                 className="w-full"
               >
-                {/* Letterboxed hero — image stays clean, title sits below */}
-                <div className="relative w-full h-[46vh] md:h-[60vh] overflow-hidden bg-ink-900">
-                  <div className="absolute top-0 inset-x-0 h-5 md:h-8 bg-ink-950 z-10" />
-                  <div className="absolute bottom-0 inset-x-0 h-5 md:h-8 bg-ink-950 z-10" />
-                  <motion.img
-                    initial={{ scale: 1.15 }}
-                    animate={{ scale: 1 }}
-                    transition={{ duration: 2, ease }}
-                    src={archetype.image}
-                    alt={archetype.name}
-                    className="w-full h-full object-cover object-top"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-r from-ink-950/45 via-transparent to-ink-950/45" />
+                <div className="grid lg:grid-cols-12 gap-12 lg:gap-16">
+                  {/* Left — portrait + style DNA */}
                   <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.8, duration: 0.8 }}
-                    className="absolute bottom-8 md:bottom-12 right-5 md:right-8 z-10 font-mono text-[10px] tracking-[0.3em] uppercase text-bone/70 bg-ink-950/50 backdrop-blur-sm px-3 py-2"
+                    initial={{ opacity: 0, scale: 1.04 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 1.1, ease }}
+                    className="lg:col-span-5"
                   >
-                    Your frame · {String(new Date().getFullYear())}
-                  </motion.div>
-                </div>
+                    <div className="relative aspect-[3/4] overflow-hidden bg-ink-800">
+                      <img
+                        src={archetype.image}
+                        alt={archetype.name}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-ink-950/75 via-transparent to-transparent" />
+                      <div className="absolute bottom-0 inset-x-0 p-6">
+                        <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-ember mb-1">
+                          Your frame
+                        </p>
+                        <p className="font-display italic text-2xl md:text-3xl">{archetype.name}</p>
+                      </div>
+                    </div>
 
-                <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 mt-12 md:mt-16">
-                  {/* Left — title, tagline, DNA */}
+                    {/* Style DNA meters */}
+                    <div className="mt-10">
+                      <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-bone/40 mb-5">
+                        Your style DNA
+                      </p>
+                      {(Object.keys(archetypes) as ArchetypeKey[]).map((k, i) => {
+                        const sum = Object.values(totals).reduce((a, b) => a + b, 0) || 1
+                        const pct = Math.round((totals[k] / sum) * 100)
+                        const winner = k === archetype.key
+                        return (
+                          <div key={k} className="mb-4">
+                            <div className="flex justify-between font-mono text-[10px] tracking-[0.2em] uppercase mb-1.5">
+                              <span className={winner ? 'text-ember' : 'text-bone/50'}>
+                                {archetypes[k].name.replace('The ', '')}
+                              </span>
+                              <span className={winner ? 'text-ember' : 'text-bone/35'}>{pct}%</span>
+                            </div>
+                            <div className="h-1.5 bg-bone/10 overflow-hidden">
+                              <motion.div
+                                className={`h-full ${winner ? 'bg-ember' : 'bg-bone/30'}`}
+                                initial={{ width: 0 }}
+                                animate={{ width: `${pct}%` }}
+                                transition={{ delay: 0.6 + i * 0.12, duration: 1, ease }}
+                              />
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </motion.div>
+
+                  {/* Right — verdict, playbook, call sheet */}
                   <div className="lg:col-span-7">
                     <motion.p
                       initial={{ opacity: 0, y: 16 }}
@@ -525,44 +555,13 @@ export default function FindYourFrame() {
                       </div>
                     )}
 
-                    {/* Style DNA meters */}
-                    <div className="max-w-xl">
-                      <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-bone/40 mb-5">
-                        Your style DNA
-                      </p>
-                      {(Object.keys(archetypes) as ArchetypeKey[]).map((k, i) => {
-                        const sum = Object.values(totals).reduce((a, b) => a + b, 0) || 1
-                        const pct = Math.round((totals[k] / sum) * 100)
-                        const winner = k === archetype.key
-                        return (
-                          <div key={k} className="mb-4">
-                            <div className="flex justify-between font-mono text-[10px] tracking-[0.2em] uppercase mb-1.5">
-                              <span className={winner ? 'text-ember' : 'text-bone/50'}>
-                                {archetypes[k].name.replace('The ', '')}
-                              </span>
-                              <span className={winner ? 'text-ember' : 'text-bone/35'}>{pct}%</span>
-                            </div>
-                            <div className="h-1.5 bg-bone/10 overflow-hidden">
-                              <motion.div
-                                className={`h-full ${winner ? 'bg-ember' : 'bg-bone/30'}`}
-                                initial={{ width: 0 }}
-                                animate={{ width: `${pct}%` }}
-                                transition={{ delay: 0.6 + i * 0.12, duration: 1, ease }}
-                              />
-                            </div>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Right — call sheet + send */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5, duration: 0.8, ease }}
-                    className="lg:col-span-5"
-                  >
+                    {/* Call sheet + send */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5, duration: 0.8, ease }}
+                      className="max-w-xl"
+                    >
                     <div className="border border-bone/15 bg-ink-900">
                       {/* slate stripe header */}
                       <div
@@ -644,7 +643,8 @@ export default function FindYourFrame() {
                         {socials.instagram.handle}
                       </a>
                     </p>
-                  </motion.div>
+                    </motion.div>
+                  </div>
                 </div>
               </motion.div>
             )}
