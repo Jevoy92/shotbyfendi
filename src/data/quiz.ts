@@ -77,10 +77,10 @@ export const questions: Question[] = [
     prompt: 'What are we making?',
     kind: 'icons',
     options: [
-      { label: 'A brand film that sells without shouting', brief: 'Brand film', weights: { polished: 3, golden: 1 } },
+      { label: 'A brand or campaign film that sells without shouting', brief: 'Brand / campaign film', weights: { polished: 3, golden: 1 } },
       { label: 'A music video for my next drop', brief: 'Music video', weights: { auteur: 3, street: 1 } },
-      { label: 'A month of social content in one shoot', brief: 'Social content batch', weights: { street: 2, golden: 2 } },
-      { label: 'An event recap that actually gets watched', brief: 'Event recap', weights: { street: 2, auteur: 1 } },
+      { label: 'A month of content from one production day', brief: 'Content system', weights: { street: 2, golden: 2 } },
+      { label: 'An event, launch, or conference recap', brief: 'Event / launch recap', weights: { street: 2, auteur: 1 } },
     ],
   },
   {
@@ -103,8 +103,8 @@ export const questions: Question[] = [
     options: [
       { label: 'Instagram & TikTok — vertical, fast', brief: 'IG / TikTok', weights: { street: 2, auteur: 1 } },
       { label: 'YouTube — people press play on purpose', brief: 'YouTube', weights: { auteur: 2, golden: 1 } },
-      { label: 'My website — first impressions for clients', brief: 'Website', weights: { polished: 3 } },
-      { label: 'Everywhere — cut it for every platform', brief: 'Multi-platform', weights: { polished: 1, street: 1, golden: 1 } },
+      { label: 'Website & LinkedIn — where clients vet you', brief: 'Website / LinkedIn', weights: { polished: 3 } },
+      { label: 'Everywhere — one shoot, every platform', brief: 'Multi-platform', weights: { polished: 1, street: 1, golden: 1 } },
     ],
   },
   {
@@ -148,9 +148,10 @@ export const questions: Question[] = [
     prompt: 'Open up the budget.',
     kind: 'aperture',
     options: [
-      { label: 'Under $1k — starting out', brief: 'Under $1k', weights: {} },
-      { label: '$1k – $3k — ready to invest', brief: '$1k–$3k', weights: {} },
-      { label: '$3k+ — ongoing content', brief: '$3k+', weights: {} },
+      { label: '$500 – $1k — single session', brief: '$500–$1k', weights: {} },
+      { label: '$1k – $2k — brand shoot', brief: '$1k–$2k', weights: {} },
+      { label: '$2k – $3k — full production day', brief: '$2k–$3k', weights: {} },
+      { label: '$3k+ — ongoing partnership', brief: '$3k+', weights: {} },
       { label: 'Not sure yet — advise me', brief: 'TBD', weights: {} },
     ],
   },
@@ -182,7 +183,7 @@ export function recommendPackage(archetype: Archetype, answers: Option[], qs: Qu
   const get = (id: string) => answers[qs.findIndex((q) => q.id === id)]?.brief ?? ''
   const budget = get('budget')
   if (budget === '$3k+') return 'Monthly Retainer'
-  if (budget === 'Under $1k') return 'The Basic Shoot'
+  if (budget === '$500–$1k') return 'The Basic Shoot'
   return archetype.recommendedPackage
 }
 
@@ -197,7 +198,7 @@ export function readiness(answers: Option[], qs: Question[]): Readiness {
   const b = get('budget')
   const p = get('platform')
   const tPts = t === 'ASAP' || t === 'This month' ? 3 : t === 'This quarter' ? 2 : 1
-  const bPts = b === '$3k+' || b === '$1k–$3k' ? 3 : b === 'Under $1k' ? 2 : 1
+  const bPts = b === '$3k+' || b === '$2k–$3k' ? 3 : b === '$1k–$2k' || b === '$500–$1k' ? 2 : 1
   const pPts = p === 'Multi-platform' ? 2 : 3
   const pct = Math.round(((tPts + bPts + pPts) / 9) * 100)
   if (pct >= 85)
@@ -233,7 +234,8 @@ const archetypeTips: Record<ArchetypeKey, string> = {
 const platformTips: Record<string, string> = {
   'IG / TikTok': 'Shoot everything 4K vertical and frame for the center 80% — captions and UI eat the edges.',
   YouTube: 'Open cold, mid-action. Save the intro for second twenty, not second one.',
-  Website: 'One hero film, 60–90 seconds, autoplay muted with captions — it outperforms a wall of clips.',
+  'Website / LinkedIn':
+    'One hero film, 60–90 seconds, autoplay muted with captions — and upload natively to LinkedIn; link posts get buried.',
   'Multi-platform': 'Shoot horizontal masters with safe vertical crops in mind — one session, every aspect ratio.',
 }
 

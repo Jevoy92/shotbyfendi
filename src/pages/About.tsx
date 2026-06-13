@@ -55,9 +55,35 @@ export default function About() {
                   followed him into videography.
                 </p>
                 <p>
-                  Today, ShotByFendi helps clients tell their story through
-                  visuals that feel real, polished, and worth pausing for.
+                  Today, ShotByFendi operates as a full media partner —
+                  strategy, pre-production, production, and post — for brands,
+                  agencies, and artists who need broadcast-quality work without
+                  agency overhead. A media specialist who just happens to carry
+                  the camera too.
                 </p>
+              </div>
+
+              <div className="mt-10">
+                <p className="eyebrow mb-4">Capabilities</p>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    'Creative direction',
+                    'Pre-production planning',
+                    '4K cinema capture',
+                    'Licensed music & audio mix',
+                    'Color grading',
+                    'Interview & doc lighting',
+                    'Multi-platform deliverables',
+                    'On location or studio',
+                  ].map((c) => (
+                    <span
+                      key={c}
+                      className="border border-bone/15 px-3 py-1.5 text-xs text-bone/65 hover:border-ember hover:text-bone transition-colors"
+                    >
+                      {c}
+                    </span>
+                  ))}
+                </div>
               </div>
 
               <div className="mt-12 grid grid-cols-3 gap-6 border-t border-bone/10 pt-8">

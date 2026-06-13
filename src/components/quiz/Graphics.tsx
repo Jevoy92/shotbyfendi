@@ -279,91 +279,121 @@ export function LiquidCapsule({ level, active }: { level: number; active: boolea
 /* ───────── Q7 — aperture that opens with budget */
 
 export function Aperture({ open }: { open: number }) {
-  // open 0..1 → blade-circle centers move outward, widening the hole.
-  // Warm light sits BEHIND the blades, so opening the budget literally
-  // lets more light through the lens.
-  // Hole radius = d − blade radius (42): d 36→68 gives a hole of 0→26px.
-  const d = 36 + open * 32
-  const blades = Array.from({ length: 6 }, (_, i) => {
-    const a = (i * 60 - 90) * (Math.PI / 180)
-    return { cx: 80 + d * Math.cos(a), cy: 80 + d * Math.sin(a) }
+  // Trapezoid-blade iris (adapted from the UX Pilot concept): blades retreat
+  // outward as `open` grows, and a glowing light core widens behind them.
+  const cx = 100
+  const cy = 100
+  const outerR = 82
+  const innerR = 14 + open * 52 // 14 → 66
+  const bladeCount = 6
+  const spring = { type: 'spring' as const, stiffness: 170, damping: 22 }
+
+  const bladePoints = (i: number) => {
+    const angle = (i / bladeCount) * Math.PI * 2
+    const nextAngle = ((i + 1) / bladeCount) * Math.PI * 2
+    const midAngle = (angle + nextAngle) / 2
+    const bladeInset = innerR + 2
+    const bladeOuter = outerR - 2
+    const p1x = cx + Math.cos(angle) * bladeOuter
+    const p1y = cy + Math.sin(angle) * bladeOuter
+    const p2x = cx + Math.cos(nextAngle) * bladeOuter
+    const p2y = cy + Math.sin(nextAngle) * bladeOuter
+    const p3x = cx + Math.cos(midAngle + 0.25) * bladeInset
+    const p3y = cy + Math.sin(midAngle + 0.25) * bladeInset
+    const p4x = cx + Math.cos(midAngle - 0.25) * bladeInset
+    const p4y = cy + Math.sin(midAngle - 0.25) * bladeInset
+    return `${p1x},${p1y} ${p2x},${p2y} ${p3x},${p3y} ${p4x},${p4y}`
+  }
+
+  const ticks = Array.from({ length: 24 }, (_, i) => {
+    const angle = (i / 24) * Math.PI * 2 - Math.PI / 2
+    const isLong = i % 4 === 0
+    const r1 = outerR + 2
+    const r2 = outerR + (isLong ? 9 : 5)
+    return (
+      <line
+        key={i}
+        x1={cx + Math.cos(angle) * r1}
+        y1={cy + Math.sin(angle) * r1}
+        x2={cx + Math.cos(angle) * r2}
+        y2={cy + Math.sin(angle) * r2}
+        stroke={isLong ? '#c87f4a' : '#3a3a3a'}
+        strokeWidth={isLong ? 1.2 : 0.6}
+        opacity={isLong ? 0.8 : 0.4}
+      />
+    )
   })
+
   return (
-    <svg viewBox="0 0 160 160" className="w-48 h-48 md:w-60 md:h-60" style={{ overflow: 'visible' }}>
+    <svg viewBox="0 0 200 200" className="w-52 h-52 md:w-64 md:h-64" style={{ overflow: 'visible' }}>
       <defs>
-        <clipPath id="ap-clip">
-          <circle cx="80" cy="80" r="46" />
-        </clipPath>
-        <radialGradient id="ap-light">
-          <stop offset="0%" stopColor="#ffe9c4" />
-          <stop offset="40%" stopColor="#e8a45e" />
-          <stop offset="75%" stopColor="#c87f4a" />
-          <stop offset="100%" stopColor="#5d3415" />
+        <radialGradient id="apv3-glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#e0a06a" stopOpacity={0.15 + open * 0.55} />
+          <stop offset="60%" stopColor="#c87f4a" stopOpacity={(0.15 + open * 0.55) * 0.5} />
+          <stop offset="100%" stopColor="#c87f4a" stopOpacity="0" />
         </radialGradient>
-        <linearGradient id="ap-blade" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#33373e" />
-          <stop offset="55%" stopColor="#23262b" />
-          <stop offset="100%" stopColor="#15171a" />
-        </linearGradient>
+        <radialGradient id="apv3-core" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#ffe9c4" stopOpacity="0.95" />
+          <stop offset="45%" stopColor="#e0a06a" stopOpacity="0.8" />
+          <stop offset="100%" stopColor="#8b4513" stopOpacity="0.4" />
+        </radialGradient>
+        <filter id="apv3-blur">
+          <feGaussianBlur stdDeviation="3" result="b" />
+          <feMerge>
+            <feMergeNode in="b" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        <clipPath id="apv3-clip">
+          <circle cx={cx} cy={cy} r={outerR} />
+        </clipPath>
       </defs>
 
-      {/* outer glow that grows as the iris opens */}
-      <motion.circle
-        cx="80"
-        cy="80"
-        r="44"
-        fill="url(#ap-light)"
-        style={{ filter: 'blur(18px)' }}
-        animate={{ opacity: 0.12 + open * 0.5 }}
-        transition={{ duration: 0.3 }}
-      />
+      {/* outer decorative rings + ticks */}
+      <circle cx={cx} cy={cy} r={outerR + 12} fill="none" stroke="#3a3a3a" strokeWidth="1" opacity="0.6" />
+      <circle cx={cx} cy={cy} r={outerR + 6} fill="none" stroke="#3a3a3a" strokeWidth="0.5" opacity="0.4" />
+      {ticks}
 
-      {/* the light source behind the blades */}
-      <circle cx="80" cy="80" r="46" fill="url(#ap-light)" />
+      {/* lens body */}
+      <circle cx={cx} cy={cy} r={outerR} fill="#0e0e0e" stroke="#3a3a3a" strokeWidth="1.5" />
+
+      {/* light core behind the blades */}
       <motion.circle
-        cx="80"
-        cy="80"
-        r="46"
-        fill="#070707"
-        animate={{ opacity: 0.55 - open * 0.55 }}
-        transition={{ duration: 0.3 }}
+        cx={cx}
+        cy={cy}
+        fill="url(#apv3-core)"
+        filter="url(#apv3-blur)"
+        animate={{ r: innerR }}
+        transition={spring}
       />
+      <motion.circle cx={cx} cy={cy} fill="url(#apv3-glow)" animate={{ r: innerR + 10 }} transition={spring} />
 
       {/* iris blades */}
-      <g clipPath="url(#ap-clip)">
-        {blades.map((b, i) => (
-          <motion.circle
+      <g clipPath="url(#apv3-clip)">
+        {Array.from({ length: bladeCount }, (_, i) => (
+          <motion.polygon
             key={i}
-            r="42"
-            fill="url(#ap-blade)"
-            stroke="rgba(232,228,220,0.55)"
-            strokeWidth="2"
-            animate={{ cx: b.cx, cy: b.cy }}
-            transition={{ type: 'spring', stiffness: 160, damping: 20 }}
+            fill="#26262a"
+            stroke="#141416"
+            strokeWidth="0.8"
+            animate={{ points: bladePoints(i) }}
+            transition={spring}
           />
         ))}
       </g>
 
-      {/* barrel rings */}
-      <circle cx="80" cy="80" r="46" fill="none" stroke="rgba(232,228,220,0.6)" strokeWidth="2" />
-      <circle cx="80" cy="80" r="53" fill="none" stroke="rgba(232,228,220,0.22)" strokeWidth="6" />
-      <circle cx="80" cy="80" r="57" fill="none" stroke="rgba(232,228,220,0.35)" strokeWidth="1.5" />
-
-      {/* f-stop ticks */}
-      {Array.from({ length: 12 }).map((_, i) => {
-        const a = (i * 30 * Math.PI) / 180
-        return (
-          <line
-            key={i}
-            x1={80 + 60 * Math.cos(a)}
-            y1={80 + 60 * Math.sin(a)}
-            x2={80 + 65 * Math.cos(a)}
-            y2={80 + 65 * Math.sin(a)}
-            stroke="rgba(232,228,220,0.4)"
-            strokeWidth="2"
-          />
-        )
-      })}
+      {/* aperture edge highlight */}
+      <motion.circle
+        cx={cx}
+        cy={cy}
+        fill="none"
+        stroke="#c87f4a"
+        strokeWidth="0.9"
+        opacity="0.65"
+        animate={{ r: innerR }}
+        transition={spring}
+      />
+      <circle cx={cx} cy={cy} r="2" fill="#c87f4a" opacity="0.8" />
     </svg>
   )
 }

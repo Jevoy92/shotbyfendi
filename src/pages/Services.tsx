@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import PageShell from '../components/PageShell'
+import Process from '../components/Process'
 
 const ease = [0.22, 1, 0.36, 1] as const
 
@@ -45,11 +46,14 @@ export default function Services() {
             <span className="italic">work together.</span>
           </h1>
           <p className="text-bone/60 text-base md:text-lg leading-relaxed max-w-xl mt-8">
-            Three ways in. Every package can be tailored to the actual shape of
-            your project — these are the shells, not the cage.
+            Three ways in, backed by one process. Every package can be tailored
+            to the actual shape of your project — these are the shells, not the
+            cage.
           </p>
         </div>
       </section>
+
+      <Process />
 
       <section className="pb-24 md:pb-36 bg-ink-950">
         <div className="container-wide">

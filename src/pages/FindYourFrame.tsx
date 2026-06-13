@@ -49,7 +49,7 @@ export default function FindYourFrame() {
   const [name, setName] = useState('')
   const [copied, setCopied] = useState(false)
   const [paceVal, setPaceVal] = useState(50)
-  const [budgetVal, setBudgetVal] = useState(50)
+  const [budgetStop, setBudgetStop] = useState(1) // 0..3 — discrete f-stops
   const advancing = useRef(false)
 
   const done = step >= questions.length
@@ -95,7 +95,7 @@ export default function FindYourFrame() {
     setStep(-1)
     setCopied(false)
     setPaceVal(50)
-    setBudgetVal(50)
+    setBudgetStop(1)
   }
 
   const mailto = () => {
@@ -116,7 +116,7 @@ export default function FindYourFrame() {
 
   const q = step >= 0 && !done ? questions[step] : null
   const paceIdx = paceVal < 34 ? 0 : paceVal < 67 ? 2 : 1 // slow / build / fast (slider order)
-  const budgetIdx = budgetVal < 34 ? 0 : budgetVal < 67 ? 1 : 2
+  const fStops = ['F/16', 'F/11', 'F/8', 'WIDE OPEN']
   const progress = Math.max(0, Math.min(step, questions.length)) / questions.length
 
   return (
@@ -353,35 +353,56 @@ export default function FindYourFrame() {
                   </div>
                 )}
 
-                {/* aperture — budget */}
+                {/* aperture — budget, four discrete f-stops */}
                 {q.kind === 'aperture' && (
-                  <div className="grid md:grid-cols-12 gap-10 items-center max-w-3xl">
+                  <div className="grid md:grid-cols-12 gap-10 md:gap-14 items-center max-w-4xl">
                     <div className="md:col-span-5 flex justify-center">
-                      <Aperture open={budgetVal / 100} />
+                      <Aperture open={budgetStop / 3} />
                     </div>
                     <div className="md:col-span-7">
                       <input
                         type="range"
                         min={0}
-                        max={100}
-                        value={budgetVal}
-                        onChange={(e) => setBudgetVal(Number(e.target.value))}
+                        max={3}
+                        step={1}
+                        value={budgetStop}
+                        onChange={(e) => setBudgetStop(Number(e.target.value))}
                         className="quiz-slider"
                         aria-label="Budget range"
+                        style={{
+                          background: `linear-gradient(to right, #c87f4a ${(budgetStop / 3) * 100}%, rgba(232,228,220,0.15) ${(budgetStop / 3) * 100}%)`,
+                        }}
                       />
-                      <div className="flex justify-between font-mono text-[10px] tracking-[0.25em] uppercase text-bone/40 mt-3">
-                        <span>f/16</span>
-                        <span>Wide open</span>
+                      <div className="flex justify-between font-mono text-[10px] tracking-[0.25em] uppercase mt-3">
+                        <span className="text-bone/40">F/16</span>
+                        <span
+                          className={`transition-colors duration-300 ${budgetStop === 3 ? 'text-ember' : 'text-bone/40'}`}
+                        >
+                          Wide open
+                        </span>
                       </div>
-                      <p className="font-display italic text-2xl md:text-3xl text-ember mt-8 min-h-[2.5rem]">
-                        {q.options[budgetIdx].label}
-                      </p>
+
+                      {(() => {
+                        const [amount, sub] = q.options[budgetStop].label.split(' — ')
+                        return (
+                          <div className="mt-8 min-h-[3.5rem]">
+                            <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-ember/80 mb-2">
+                              {fStops[budgetStop]}
+                            </p>
+                            <p className="font-display italic leading-none">
+                              <span className="text-3xl md:text-5xl text-ember">{amount}</span>
+                              <span className="text-xl md:text-3xl text-bone/50"> — {sub}</span>
+                            </p>
+                          </div>
+                        )
+                      })()}
+
                       <div className="flex flex-wrap items-center gap-5 mt-8">
-                        <button onClick={() => pickAndAdvance(q.options[budgetIdx], 250)} className="btn-primary">
+                        <button onClick={() => pickAndAdvance(q.options[budgetStop], 250)} className="btn-primary">
                           Lock it in <ArrowRight size={14} />
                         </button>
                         <button
-                          onClick={() => pickAndAdvance(q.options[3], 250)}
+                          onClick={() => pickAndAdvance(q.options[4], 250)}
                           className="font-mono text-[10px] tracking-[0.3em] uppercase text-bone/40 hover:text-bone transition-colors"
                         >
                           Not sure — advise me

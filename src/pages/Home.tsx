@@ -48,8 +48,8 @@ export default function Home() {
             custom={3}
             className="text-bone/60 text-base md:text-lg leading-relaxed max-w-md mb-10"
           >
-            Brand films, music videos, and creative direction for people building
-            something worth watching.
+            Brand films, music videos, and creative direction for brands,
+            agencies, and artists building something worth watching.
           </motion.p>
 
           <motion.div
@@ -98,7 +98,7 @@ export default function Home() {
       <section className="border-y border-bone/10 py-7 md:py-9 overflow-hidden bg-ink-950">
         <div className="flex animate-marquee whitespace-nowrap will-change-transform">
           {[...Array(3)].flatMap((_, r) =>
-            ['Brand Films', 'Music Videos', 'Short-Form Content', 'Creative Direction', 'Event Recaps', 'Available Worldwide'].map((t, i) => (
+            ['Brand & Campaign Films', 'Music Videos', 'Content Systems', 'Creative Direction', 'Event & Launch Recaps', 'Available Worldwide'].map((t, i) => (
               <span
                 key={`${r}-${i}`}
                 className="font-display italic text-2xl md:text-4xl text-bone/70 px-7 md:px-10 flex items-center gap-7 md:gap-10"
